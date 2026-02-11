@@ -1,0 +1,118 @@
+.tp-widget {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.tp-status {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tp-status__name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #18181b;
+}
+
+.tp-status__text {
+  font-size: 12px;
+  color: #71717a;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tp-status--connected {
+  color: #059669;
+}
+
+.tp-status--error {
+  color: #dc2626;
+}
+
+.tp-status__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #059669;
+  animation: tp-pulse 2s ease-in-out infinite;
+}
+
+.tp-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.tp-button-group {
+  display: inline-flex;
+  gap: 8px;
+}
+
+.tp-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.15s, transform 0.1s;
+}
+
+.tp-button:active {
+  transform: scale(0.95);
+}
+
+.tp-button--start {
+  background: #18181b;
+  color: white;
+}
+
+.tp-button--start:hover {
+  background: #27272a;
+}
+
+.tp-button--start:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.tp-button--mute {
+  background: #f4f4f5;
+  color: #18181b;
+}
+
+.tp-button--mute:hover {
+  background: #e4e4e7;
+}
+
+.tp-button--end {
+  background: #dc2626;
+  color: white;
+}
+
+.tp-button--end:hover {
+  background: #b91c1c;
+}
+
+.tp-button--loading {
+  opacity: 0.7;
+}
+
+.tp-spin {
+  animation: tp-spin 1s linear infinite;
+}
+
+@keyframes tp-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes tp-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}

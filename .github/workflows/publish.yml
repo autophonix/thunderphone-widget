@@ -1,0 +1,89 @@
+name: Publish Widget to npm
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to publish (e.g. 0.1.0, 0.2.0). Will update package.json before publishing."
+        required: true
+        type: string
+      tag:
+        description: "npm dist-tag"
+        required: false
+        default: "latest"
+        type: choice
+        options:
+          - latest
+          - beta
+          - next
+
+permissions:
+  contents: write
+  id-token: write
+
+env:
+  PROJECT_ID: gen-lang-client-0266053302
+  CDN_BUCKET: gs://thunderphone-widget-cdn
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Update version in package.json
+        run: npm version "${{ inputs.version }}" --no-git-tag-version
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Publish to npm
+        run: npm publish --access public --provenance --tag "${{ inputs.tag }}"
+
+      - name: Commit version bump
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add package.json package-lock.json
+          git commit -m "chore(widget): bump version to ${{ inputs.version }}" || echo "No changes to commit"
+          git push
+
+      # Upload script tag build to GCS for CDN hosting
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: projects/907537637618/locations/global/workloadIdentityPools/github-pool/providers/github-provider
+          service_account: gha-cloudrun-deploy@gen-lang-client-0266053302.iam.gserviceaccount.com
+
+      - uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: gen-lang-client-0266053302
+
+      - name: Upload to CDN bucket
+        run: |
+          VERSION="${{ inputs.version }}"
+
+          # Upload versioned copy
+          gsutil -h "Content-Type:application/javascript" \
+            -h "Cache-Control:public, max-age=31536000, immutable" \
+            cp dist/mount.global.js "$CDN_BUCKET/widget/v${VERSION}/widget.js"
+
+          gsutil -h "Content-Type:text/css" \
+            -h "Cache-Control:public, max-age=31536000, immutable" \
+            cp dist/mount.css "$CDN_BUCKET/widget/v${VERSION}/style.css"
+
+          # Update latest alias (short cache for freshness)
+          gsutil -h "Content-Type:application/javascript" \
+            -h "Cache-Control:public, max-age=300" \
+            cp dist/mount.global.js "$CDN_BUCKET/widget/latest/widget.js"
+
+          gsutil -h "Content-Type:text/css" \
+            -h "Cache-Control:public, max-age=300" \
+            cp dist/mount.css "$CDN_BUCKET/widget/latest/style.css"
