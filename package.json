@@ -2,6 +2,10 @@
   "name": "@thunderphone/widget",
   "version": "0.1.0",
   "description": "Embeddable voice widget for ThunderPhone AI agents",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/autophonix/thunderphone-widget.git"
+  },
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
