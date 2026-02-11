@@ -47,6 +47,8 @@ jobs:
 
       - name: Publish to npm
         run: npm publish --access public --provenance --tag "${{ inputs.tag }}"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Commit version bump
         run: |
