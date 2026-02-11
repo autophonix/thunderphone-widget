@@ -1,6 +1,6 @@
 {
   "name": "@thunderphone/widget",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Embeddable voice widget for ThunderPhone AI agents",
   "repository": {
     "type": "git",
@@ -18,7 +18,9 @@
     "./style.css": "./dist/index.css",
     "./widget.js": "./dist/mount.global.js"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch"
