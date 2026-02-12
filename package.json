@@ -23,7 +23,8 @@
   ],
   "scripts": {
     "build": "tsup",
-    "dev": "tsup --watch"
+    "dev": "tsup --watch",
+    "lint": "tsc --noEmit"
   },
   "peerDependencies": {
     "react": ">=18.0.0",
