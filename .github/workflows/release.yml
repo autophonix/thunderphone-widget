@@ -57,6 +57,16 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npx semantic-release
 
+      - name: Publish to npm
+        if: hashFiles('.release-version') != ''
+        run: |
+          CHANNEL=$(cat .release-channel)
+          if [ -n "$CHANNEL" ]; then
+            npm publish --access public --provenance --tag "$CHANNEL"
+          else
+            npm publish --access public --provenance
+          fi
+
       - name: Upload to CDN
         if: hashFiles('.release-version') != ''
         run: |
