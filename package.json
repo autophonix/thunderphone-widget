@@ -1,6 +1,6 @@
 {
   "name": "@thunderphone/widget",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Embeddable voice widget for ThunderPhone AI agents",
   "repository": {
     "type": "git",
