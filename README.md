@@ -1,4 +1,4 @@
-# @thunderphone/widget
+# ThunderPhone Widget
 
 Embed a ThunderPhone voice AI agent on any website. Users can talk to your agent directly from your site using their browser microphone.
 
