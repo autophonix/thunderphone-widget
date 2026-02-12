@@ -1,0 +1,92 @@
+name: Release
+
+on:
+  push:
+    branches: [main, beta]
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+  id-token: write
+
+env:
+  CDN_BUCKET: gs://thunderphone-widget-cdn
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Upgrade npm for trusted publishing
+        run: npm install -g npm@latest
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Test
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      # GCP auth for CDN upload (set up before semantic-release so exec plugin can use gsutil)
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: projects/907537637618/locations/global/workloadIdentityPools/github-pool/providers/github-provider
+          service_account: gha-cloudrun-deploy@gen-lang-client-0266053302.iam.gserviceaccount.com
+
+      - uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: gen-lang-client-0266053302
+
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_CONFIG_PROVENANCE: true
+        run: npx semantic-release
+
+      - name: Upload to CDN
+        if: hashFiles('.release-version') != ''
+        run: |
+          VERSION=$(cat .release-version)
+
+          if echo "$VERSION" | grep -q "-"; then
+            # Pre-release (beta) — only update beta/ alias
+            gsutil -h "Content-Type:application/javascript" \
+              -h "Cache-Control:public, max-age=300" \
+              cp dist/mount.global.js "$CDN_BUCKET/widget/beta/widget.js"
+
+            gsutil -h "Content-Type:text/css" \
+              -h "Cache-Control:public, max-age=300" \
+              cp dist/mount.css "$CDN_BUCKET/widget/beta/style.css"
+          else
+            # Stable release — upload versioned + latest
+            gsutil -h "Content-Type:application/javascript" \
+              -h "Cache-Control:public, max-age=31536000, immutable" \
+              cp dist/mount.global.js "$CDN_BUCKET/widget/v${VERSION}/widget.js"
+
+            gsutil -h "Content-Type:text/css" \
+              -h "Cache-Control:public, max-age=31536000, immutable" \
+              cp dist/mount.css "$CDN_BUCKET/widget/v${VERSION}/style.css"
+
+            gsutil -h "Content-Type:application/javascript" \
+              -h "Cache-Control:public, max-age=300" \
+              cp dist/mount.global.js "$CDN_BUCKET/widget/latest/widget.js"
+
+            gsutil -h "Content-Type:text/css" \
+              -h "Cache-Control:public, max-age=300" \
+              cp dist/mount.css "$CDN_BUCKET/widget/latest/style.css"
+          fi
