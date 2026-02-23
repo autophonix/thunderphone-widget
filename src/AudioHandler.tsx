@@ -19,15 +19,21 @@ export function AudioHandler({ onAgentConnected, onDisconnected }: AudioHandlerP
     const handleParticipantConnected = () => onAgentConnected()
     const handleDisconnect = () => onDisconnected()
 
+    // The bot publishes multiple audio tracks (tts, bg noise, hold music).
+    // Add each track to a single MediaStream so the browser mixes them.
     const attachTrack = (
       track: { kind: Track.Kind; mediaStreamTrack: MediaStreamTrack },
       _pub: RemoteTrackPublication,
       _participant: RemoteParticipant,
     ) => {
       if (track.kind === Track.Kind.Audio && audioRef.current) {
-        const stream = new MediaStream([track.mediaStreamTrack])
-        audioRef.current.srcObject = stream
-        audioRef.current.play().catch(() => {})
+        const existing = audioRef.current.srcObject as MediaStream | null
+        if (existing) {
+          existing.addTrack(track.mediaStreamTrack)
+        } else {
+          audioRef.current.srcObject = new MediaStream([track.mediaStreamTrack])
+          audioRef.current.play().catch(() => {})
+        }
       }
     }
 
@@ -35,14 +41,17 @@ export function AudioHandler({ onAgentConnected, onDisconnected }: AudioHandlerP
     room.on(RoomEvent.Disconnected, handleDisconnect)
     room.on(RoomEvent.TrackSubscribed, attachTrack)
 
+    const initialTracks: MediaStreamTrack[] = []
     for (const participant of room.remoteParticipants.values()) {
       for (const pub of participant.trackPublications.values()) {
-        if (pub.track && pub.isSubscribed && pub.track.kind === Track.Kind.Audio && audioRef.current) {
-          const stream = new MediaStream([pub.track.mediaStreamTrack])
-          audioRef.current.srcObject = stream
-          audioRef.current.play().catch(() => {})
+        if (pub.track && pub.isSubscribed && pub.track.kind === Track.Kind.Audio) {
+          initialTracks.push(pub.track.mediaStreamTrack)
         }
       }
+    }
+    if (initialTracks.length > 0 && audioRef.current) {
+      audioRef.current.srcObject = new MediaStream(initialTracks)
+      audioRef.current.play().catch(() => {})
     }
 
     return () => {
