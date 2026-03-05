@@ -42,6 +42,7 @@ function App() {
 | `onDisconnect` | `() => void` | No | Called when the session ends |
 | `onError` | `(error) => void` | No | Called on errors. Error has `error` (code) and `message` fields |
 | `className` | `string` | No | Additional CSS class for the widget container |
+| `ringtone` | `boolean \| string` | No | Play a ringtone while connecting. `true` for default, or a URL for custom audio. Disabled by default |
 
 ## Headless Hook
 
@@ -91,6 +92,7 @@ function CustomCallButton() {
 | `onConnect` | `() => void` | No | Called when the voice session connects |
 | `onDisconnect` | `() => void` | No | Called when the session ends |
 | `onError` | `(error) => void` | No | Called on errors |
+| `ringtone` | `boolean \| string` | No | Play a ringtone while connecting. `true` for default, or a URL for custom audio |
 
 ### Hook Return Value
 
@@ -104,6 +106,42 @@ function CustomCallButton() {
 | `error` | `string \| undefined` | Error message if state is `'error'` |
 | `agentName` | `string \| undefined` | Name of the connected agent |
 | `audio` | `ReactNode` | Invisible element — must be rendered in the tree |
+
+## Ringtone
+
+Play a ringing sound while the widget connects, to simulate a phone call:
+
+```tsx
+<ThunderPhoneWidget
+  apiKey="pk_live_your_publishable_key"
+  agentId={123}
+  ringtone={true}
+/>
+```
+
+Use a custom audio file by passing a URL:
+
+```tsx
+<ThunderPhoneWidget
+  apiKey="pk_live_your_publishable_key"
+  agentId={123}
+  ringtone="https://example.com/my-ringtone.mp3"
+/>
+```
+
+The ringtone loops during the `connecting` state and fades out when the agent connects. It is opt-in and disabled by default.
+
+The headless hook accepts the same option:
+
+```tsx
+const phone = useThunderPhone({ apiKey, agentId, ringtone: true })
+```
+
+And the script-tag mount API:
+
+```js
+ThunderPhone.mount({ element: '#thunderphone', apiKey: '...', agentId: 123, ringtone: true })
+```
 
 ## Styling
 
