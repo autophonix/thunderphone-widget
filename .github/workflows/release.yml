@@ -99,3 +99,13 @@ jobs:
               -h "Cache-Control:public, max-age=300" \
               cp dist/mount.css "$CDN_BUCKET/widget/latest/style.css"
           fi
+
+      # Upload shared assets (ringtone, etc.) — stable path, long cache.
+      # These live outside the versioned directories so all widget versions
+      # can reference the same URL.
+      - name: Upload assets to CDN
+        run: |
+          if [ -d assets ]; then
+            gsutil -h "Cache-Control:public, max-age=31536000, immutable" \
+              -m cp -r assets/* "$CDN_BUCKET/widget/assets/"
+          fi

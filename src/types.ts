@@ -21,4 +21,11 @@ export interface ThunderPhoneWidgetProps {
   onDisconnect?: () => void
   onError?: (error: WidgetError) => void
   className?: string
+  /**
+   * Play a ringtone while connecting. Opt-in — disabled by default.
+   * - `true` plays the default ringtone from the ThunderPhone CDN.
+   * - A string URL plays a custom audio file.
+   * - `false` or omitted disables the ringtone.
+   */
+  ringtone?: boolean | string
 }
