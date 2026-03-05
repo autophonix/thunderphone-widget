@@ -11,8 +11,9 @@ export function ThunderPhoneWidget({
   onDisconnect,
   onError,
   className,
+  ringtone,
 }: ThunderPhoneWidgetProps) {
-  const phone = useThunderPhone({ apiKey, agentId, apiBase, onConnect, onDisconnect, onError })
+  const phone = useThunderPhone({ apiKey, agentId, apiBase, onConnect, onDisconnect, onError, ringtone })
 
   const handleClick = () => {
     if (phone.state === 'connected') {
