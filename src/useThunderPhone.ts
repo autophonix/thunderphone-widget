@@ -74,6 +74,8 @@ export function useThunderPhone(opts: UseThunderPhoneOptions): UseThunderPhoneRe
     const audio = ringtoneRef.current
     if (!audio) return
 
+    let fadeInterval: ReturnType<typeof setInterval> | undefined
+
     if (state === 'connecting') {
       // Reset to start and play (catch handles browsers that block autoplay
       // before a user gesture — unlikely here since connect() is click-driven).
@@ -83,10 +85,11 @@ export function useThunderPhone(opts: UseThunderPhoneOptions): UseThunderPhoneRe
     } else {
       // Fade out briefly (~200ms) for a smooth stop.
       if (!audio.paused) {
-        const fadeInterval = setInterval(() => {
+        fadeInterval = setInterval(() => {
           const next = audio.volume - 0.1
           if (next <= 0) {
             clearInterval(fadeInterval)
+            fadeInterval = undefined
             audio.pause()
             audio.currentTime = 0
             audio.volume = 1.0
@@ -95,6 +98,11 @@ export function useThunderPhone(opts: UseThunderPhoneOptions): UseThunderPhoneRe
           }
         }, 20) // 10 steps * 20ms = 200ms fade
       }
+    }
+
+    // Clean up any in-progress fade if state changes again before it completes.
+    return () => {
+      if (fadeInterval) clearInterval(fadeInterval)
     }
   }, [state])
 
@@ -115,19 +123,18 @@ export function useThunderPhone(opts: UseThunderPhoneOptions): UseThunderPhoneRe
     if (state === 'connecting' || state === 'connected') return
     setState('connecting')
     setError(undefined)
+    // Warm up mic permission in the background so the browser prompt (if
+    // needed) overlaps with the API call.  This is fire-and-forget: if the
+    // session request fails we simply discard the stream without the user
+    // noticing an unnecessary permission prompt — getUserMedia only shows
+    // the prompt once per origin, so subsequent calls are instant.
+    navigator.mediaDevices.getUserMedia({ audio: true }).then(
+      (stream) => { stream.getTracks().forEach((t) => t.stop()) },
+      () => {},
+    )
+
     try {
-      // Request mic permission in parallel with the API call so the browser
-      // permission prompt (if needed) doesn't add latency after the token arrives.
-      const [sess] = await Promise.all([
-        createWidgetSession(opts.apiKey, opts.agentId, opts.apiBase),
-        navigator.mediaDevices.getUserMedia({ audio: true }).then(
-          // Release the stream immediately — LiveKitRoom will re-acquire.
-          // The permission grant persists for the page lifetime.
-          (stream) => { stream.getTracks().forEach((t) => t.stop()) },
-          // Mic denial is not fatal here; LiveKitRoom will handle the error.
-          () => {},
-        ),
-      ])
+      const sess = await createWidgetSession(opts.apiKey, opts.agentId, opts.apiBase)
       setSession(sess)
     } catch (err) {
       setState('error')
