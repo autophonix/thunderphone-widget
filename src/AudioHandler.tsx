@@ -12,11 +12,18 @@ export function AudioHandler({ onAgentConnected, onDisconnected }: AudioHandlerP
   const audioRef = useRef<HTMLAudioElement>(null)
 
   useEffect(() => {
-    if (room.remoteParticipants.size > 0) {
+    let didSignalConnected = false
+    const signalConnected = () => {
+      if (didSignalConnected) return
+      didSignalConnected = true
       onAgentConnected()
     }
 
-    const handleParticipantConnected = () => onAgentConnected()
+    if (room.remoteParticipants.size > 0) {
+      signalConnected()
+    }
+
+    const handleParticipantConnected = () => signalConnected()
     const handleDisconnect = () => onDisconnected()
 
     // The bot publishes multiple audio tracks (tts, bg noise, hold music).
@@ -34,6 +41,7 @@ export function AudioHandler({ onAgentConnected, onDisconnected }: AudioHandlerP
           audioRef.current.srcObject = new MediaStream([track.mediaStreamTrack])
           audioRef.current.play().catch(() => {})
         }
+        signalConnected()
       }
     }
 
@@ -52,6 +60,7 @@ export function AudioHandler({ onAgentConnected, onDisconnected }: AudioHandlerP
     if (initialTracks.length > 0 && audioRef.current) {
       audioRef.current.srcObject = new MediaStream(initialTracks)
       audioRef.current.play().catch(() => {})
+      signalConnected()
     }
 
     return () => {
