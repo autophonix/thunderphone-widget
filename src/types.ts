@@ -14,8 +14,7 @@ export interface WidgetError {
 export type WidgetState = 'idle' | 'connecting' | 'connected' | 'disconnected' | 'error'
 
 export interface ThunderPhoneWidgetProps {
-  apiKey: string
-  agentId: number
+  publishableKey: string
   apiBase?: string
   onConnect?: () => void
   onDisconnect?: () => void

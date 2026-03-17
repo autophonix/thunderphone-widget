@@ -17,8 +17,7 @@ import '@thunderphone/widget/style.css'
 function App() {
   return (
     <ThunderPhoneWidget
-      apiKey="pk_live_your_publishable_key"
-      agentId={123}
+      publishableKey="pk_live_your_publishable_key"
     />
   )
 }
@@ -28,15 +27,14 @@ function App() {
 
 1. Log in to [app.thunderphone.com](https://app.thunderphone.com)
 2. Go to **Developers** to create a publishable API key and configure allowed domains
-3. Enable the **Embeddable Widget** toggle on the agent you want to expose
-4. Use the agent's ID and your publishable key in the widget code above
+3. Create a **Web Widget** and select the agent you want to expose
+4. Use your publishable key in the widget code above
 
 ## Props
 
 | Prop | Type | Required | Description |
 |------|------|----------|-------------|
-| `apiKey` | `string` | Yes | Your publishable API key (`pk_live_...`) |
-| `agentId` | `number` | Yes | ID of the agent to connect to |
+| `publishableKey` | `string` | Yes | Your publishable API key (`pk_live_...`). The agent is resolved from the key's configuration. |
 | `apiBase` | `string` | No | API base URL (defaults to `https://api.thunderphone.com/v1`) |
 | `onConnect` | `() => void` | No | Called when the voice session connects |
 | `onDisconnect` | `() => void` | No | Called when the session ends |
@@ -53,8 +51,7 @@ import { useThunderPhone } from '@thunderphone/widget'
 
 function CustomCallButton() {
   const phone = useThunderPhone({
-    apiKey: 'pk_live_your_publishable_key',
-    agentId: 123,
+    publishableKey: 'pk_live_your_publishable_key',
   })
 
   const handleClick = () => {
@@ -86,8 +83,7 @@ function CustomCallButton() {
 
 | Option | Type | Required | Description |
 |--------|------|----------|-------------|
-| `apiKey` | `string` | Yes | Your publishable API key |
-| `agentId` | `number` | Yes | ID of the agent to connect to |
+| `publishableKey` | `string` | Yes | Your publishable API key |
 | `apiBase` | `string` | No | API base URL override |
 | `onConnect` | `() => void` | No | Called when the voice session connects |
 | `onDisconnect` | `() => void` | No | Called when the session ends |
@@ -113,8 +109,7 @@ Play a ringing sound while the widget connects, to simulate a phone call:
 
 ```tsx
 <ThunderPhoneWidget
-  apiKey="pk_live_your_publishable_key"
-  agentId={123}
+  publishableKey="pk_live_your_publishable_key"
   ringtone={true}
 />
 ```
@@ -123,8 +118,7 @@ Use a custom audio file by passing a URL:
 
 ```tsx
 <ThunderPhoneWidget
-  apiKey="pk_live_your_publishable_key"
-  agentId={123}
+  publishableKey="pk_live_your_publishable_key"
   ringtone="https://example.com/my-ringtone.mp3"
 />
 ```
@@ -134,13 +128,13 @@ The ringtone loops during the `connecting` state and fades out when the agent co
 The headless hook accepts the same option:
 
 ```tsx
-const phone = useThunderPhone({ apiKey, agentId, ringtone: true })
+const phone = useThunderPhone({ publishableKey, ringtone: true })
 ```
 
 And the script-tag mount API:
 
 ```js
-ThunderPhone.mount({ element: '#thunderphone', apiKey: '...', agentId: 123, ringtone: true })
+ThunderPhone.mount({ element: '#thunderphone', publishableKey: '...', ringtone: true })
 ```
 
 ## Styling
@@ -180,16 +174,15 @@ Wildcard subdomains are supported: `*.example.com` matches `app.example.com`, `d
 If you're not using a bundler, you can load the widget via script tag. This version bundles React internally so no dependencies are needed.
 
 ```html
-<link rel="stylesheet" href="https://cdn.thunderphone.com/widget/v0.3.0/style.css" />
-<script src="https://cdn.thunderphone.com/widget/v0.3.0/widget.js"></script>
+<link rel="stylesheet" href="https://cdn.thunderphone.com/widget/v0.4.0/style.css" />
+<script src="https://cdn.thunderphone.com/widget/v0.4.0/widget.js"></script>
 
 <div id="thunderphone"></div>
 
 <script>
   ThunderPhone.mount({
     element: '#thunderphone',
-    apiKey: 'pk_live_your_publishable_key',
-    agentId: 123,
+    publishableKey: 'pk_live_your_publishable_key',
   })
 </script>
 ```
@@ -204,7 +197,7 @@ https://cdn.thunderphone.com/widget/latest/style.css
 `ThunderPhone.mount()` accepts the same options as the React component props above, plus `element` (CSS selector or DOM element). It returns a handle for cleanup:
 
 ```js
-const widget = ThunderPhone.mount({ element: '#thunderphone', apiKey: '...', agentId: 123 })
+const widget = ThunderPhone.mount({ element: '#thunderphone', publishableKey: '...' })
 
 // Later, to remove the widget:
 widget.unmount()

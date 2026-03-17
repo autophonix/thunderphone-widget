@@ -10,8 +10,7 @@ export class WidgetAPIError extends Error {
 }
 
 export async function createWidgetSession(
-  apiKey: string,
-  agentId: number,
+  publishableKey: string,
   apiBase?: string,
 ): Promise<WidgetSessionResponse> {
   const base = apiBase || DEFAULT_API_BASE
@@ -19,9 +18,9 @@ export async function createWidgetSession(
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'X-API-Key': apiKey,
+      'X-API-Key': publishableKey,
     },
-    body: JSON.stringify({ agent_id: agentId }),
+    body: JSON.stringify({}),
   })
 
   if (!response.ok) {
