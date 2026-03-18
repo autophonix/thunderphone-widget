@@ -4,8 +4,7 @@ import { useThunderPhone } from './useThunderPhone'
 import type { ThunderPhoneWidgetProps } from './types'
 
 export function ThunderPhoneWidget({
-  apiKey,
-  agentId,
+  publishableKey,
   apiBase,
   onConnect,
   onDisconnect,
@@ -13,7 +12,7 @@ export function ThunderPhoneWidget({
   className,
   ringtone,
 }: ThunderPhoneWidgetProps) {
-  const phone = useThunderPhone({ apiKey, agentId, apiBase, onConnect, onDisconnect, onError, ringtone })
+  const phone = useThunderPhone({ publishableKey, apiBase, onConnect, onDisconnect, onError, ringtone })
 
   const handleClick = () => {
     if (phone.state === 'connected') {

@@ -7,8 +7,7 @@ import type { WidgetState, WidgetSessionResponse } from './types'
 const DEFAULT_RINGTONE_URL = 'https://storage.googleapis.com/thunderphone-widget-cdn/widget/assets/ringtone-default.mp3'
 
 export interface UseThunderPhoneOptions {
-  apiKey: string
-  agentId: number
+  publishableKey: string
   apiBase?: string
   onConnect?: () => void
   onDisconnect?: () => void
@@ -154,7 +153,7 @@ export function useThunderPhone(opts: UseThunderPhoneOptions): UseThunderPhoneRe
     )
 
     try {
-      const sess = await createWidgetSession(opts.apiKey, opts.agentId, opts.apiBase)
+      const sess = await createWidgetSession(opts.publishableKey, opts.apiBase)
       setSession(sess)
     } catch (err) {
       setState('error')
@@ -166,7 +165,7 @@ export function useThunderPhone(opts: UseThunderPhoneOptions): UseThunderPhoneRe
         opts.onError?.({ error: 'unknown', message: 'Unable to connect.' })
       }
     }
-  }, [opts.apiKey, opts.agentId, opts.apiBase, state, opts.onError])
+  }, [opts.publishableKey, opts.apiBase, state, opts.onError])
 
   const disconnect = useCallback(() => {
     handleDisconnect()
