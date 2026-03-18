@@ -15,12 +15,12 @@ describe('createWidgetSession', () => {
       json: () => Promise.resolve({ call_id: 1, token: 'tok', room_name: 'room', server_url: 'wss://lk', agent_name: 'Agent' }),
     })
 
-    await createWidgetSession('pk_live_abc', 42)
+    await createWidgetSession('pk_live_abc')
 
     expect(mockFetch).toHaveBeenCalledWith('https://api.thunderphone.com/v1/widget/session', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'X-API-Key': 'pk_live_abc' },
-      body: JSON.stringify({ agent_id: 42 }),
+      body: JSON.stringify({}),
     })
   })
 
@@ -30,7 +30,7 @@ describe('createWidgetSession', () => {
       json: () => Promise.resolve({ call_id: 1, token: 'tok', room_name: 'room', server_url: 'wss://lk', agent_name: 'Agent' }),
     })
 
-    await createWidgetSession('pk_live_abc', 1, 'https://custom.api/v1')
+    await createWidgetSession('pk_live_abc', 'https://custom.api/v1')
 
     expect(mockFetch).toHaveBeenCalledWith('https://custom.api/v1/widget/session', expect.anything())
   })
@@ -39,7 +39,7 @@ describe('createWidgetSession', () => {
     const session = { call_id: 99, token: 'mytoken', room_name: 'room-99', server_url: 'wss://lk', agent_name: 'TestAgent' }
     mockFetch.mockResolvedValue({ ok: true, json: () => Promise.resolve(session) })
 
-    const result = await createWidgetSession('pk_live_abc', 1)
+    const result = await createWidgetSession('pk_live_abc')
     expect(result).toEqual(session)
   })
 
@@ -49,8 +49,8 @@ describe('createWidgetSession', () => {
       json: () => Promise.resolve({ error: 'domain_not_allowed', message: 'Origin not allowed.' }),
     })
 
-    await expect(createWidgetSession('pk_live_abc', 1)).rejects.toThrow(WidgetAPIError)
-    await expect(createWidgetSession('pk_live_abc', 1)).rejects.toMatchObject({
+    await expect(createWidgetSession('pk_live_abc')).rejects.toThrow(WidgetAPIError)
+    await expect(createWidgetSession('pk_live_abc')).rejects.toMatchObject({
       code: 'domain_not_allowed',
       message: 'Origin not allowed.',
     })
@@ -62,8 +62,8 @@ describe('createWidgetSession', () => {
       json: () => Promise.reject(new Error('not json')),
     })
 
-    await expect(createWidgetSession('pk_live_abc', 1)).rejects.toThrow(WidgetAPIError)
-    await expect(createWidgetSession('pk_live_abc', 1)).rejects.toMatchObject({
+    await expect(createWidgetSession('pk_live_abc')).rejects.toThrow(WidgetAPIError)
+    await expect(createWidgetSession('pk_live_abc')).rejects.toMatchObject({
       code: 'unknown',
       message: 'Unable to connect.',
     })
