@@ -68,7 +68,7 @@ export function AudioHandler({ onAgentConnected, onDisconnected, muted, onAudioL
       const remoteData = new Uint8Array(remoteAnalyser.frequencyBinCount)
       const localData = new Uint8Array(remoteAnalyser.frequencyBinCount)
 
-      const getLevel = (analyser: AnalyserNode, buf: Uint8Array): number => {
+      const getLevel = (analyser: AnalyserNode, buf: Uint8Array<ArrayBuffer>): number => {
         analyser.getByteFrequencyData(buf)
         const bins = Math.min(24, buf.length)
         let sum = 0

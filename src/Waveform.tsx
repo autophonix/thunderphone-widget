@@ -37,7 +37,7 @@ export function Waveform({ levelRef }: WaveformProps) {
       for (let i = 0; i < BAR_COUNT; i++) {
         const bar = bars[i]
         if (!bar) continue
-        const barLevel = Math.max(0.12, level * noise[i])
+        const barLevel = Math.max(0.12, (level ?? 0) * noise[i])
         bar.style.transform = `scaleY(${barLevel})`
       }
 
