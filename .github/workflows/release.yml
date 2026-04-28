@@ -24,14 +24,9 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: "22"
+          node-version: "22.11.0"
           registry-url: "https://registry.npmjs.org"
 
-      - name: Upgrade npm
-        run: |
-          corepack disable 2>/dev/null || true
-          npm install -g npm@latest
-      
       - name: Install dependencies
         run: npm ci
 
