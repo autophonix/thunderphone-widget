@@ -17,5 +17,8 @@ export default defineConfig([
     outExtension: () => ({ js: '.global.js' }),
     noExternal: ['react', 'react-dom', 'livekit-client', '@livekit/components-react'],
     sourcemap: true,
+    define: {
+      'process.env.NODE_ENV': '"production"',
+    },
   },
 ])

@@ -13,6 +13,10 @@ export interface WidgetError {
 
 export type WidgetState = 'idle' | 'connecting' | 'connected' | 'disconnected' | 'error'
 
+export type WidgetPosition = 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left'
+
+export type WidgetTheme = 'light' | 'dark'
+
 export interface ThunderPhoneWidgetProps {
   publishableKey: string
   apiBase?: string
@@ -27,4 +31,21 @@ export interface ThunderPhoneWidgetProps {
    * - `false` or omitted disables the ringtone.
    */
   ringtone?: boolean | string
+  /**
+   * Fixed position on the viewport. Defaults to `'bottom-right'`.
+   */
+  position?: WidgetPosition
+  /**
+   * Primary accent color for the widget. Any valid CSS color.
+   * Defaults to `'#6366f1'` (indigo).
+   */
+  primaryColor?: string
+  /**
+   * Title text shown in the widget. Defaults to `'Voice assistant'`.
+   */
+  title?: string
+  /**
+   * Color theme. `'light'` (default) or `'dark'`.
+   */
+  theme?: WidgetTheme
 }

@@ -29,6 +29,10 @@ export interface UseThunderPhoneReturn {
   isMuted: boolean
   error: string | undefined
   agentName: string | undefined
+  /** 0–1 audio level (static snapshot, for convenience). */
+  audioLevel: number
+  /** Mutable ref with real-time 0–1 audio level. Read from rAF loops for smooth animation. */
+  audioLevelRef: React.RefObject<number>
   /** Render this somewhere in your tree — it's invisible but handles audio. */
   audio: ReactNode
 }
@@ -63,6 +67,8 @@ export function useThunderPhone(opts: UseThunderPhoneOptions): UseThunderPhoneRe
   const [session, setSession] = useState<WidgetSessionResponse | null>(null)
   const [muted, setMuted] = useState(false)
   const [error, setError] = useState<string | undefined>()
+  const audioLevelRef = useRef(0)
+  const setAudioLevel = useCallback((v: number) => { audioLevelRef.current = v }, [])
 
   // --- Ringtone management ---
   const ringtoneUrl = resolveRingtoneUrl(opts.ringtone)
@@ -186,6 +192,8 @@ export function useThunderPhone(opts: UseThunderPhoneOptions): UseThunderPhoneRe
         createElement(AudioHandler, {
           onAgentConnected: handleAgentConnected,
           onDisconnected: handleDisconnect,
+          muted,
+          onAudioLevel: setAudioLevel,
         }),
       )
     : null
@@ -198,6 +206,8 @@ export function useThunderPhone(opts: UseThunderPhoneOptions): UseThunderPhoneRe
     isMuted: muted,
     error,
     agentName: session?.agent_name,
+    audioLevel: 0, // deprecated — use audioLevelRef for real-time reads
+    audioLevelRef,
     audio,
   }
 }

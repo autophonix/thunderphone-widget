@@ -1,118 +1,160 @@
+/* ===========================================================================
+   ThunderPhone Widget
+   =========================================================================== */
+
+/* ---- Light theme (default) ---- */
+.tp--light {
+  --tp-bg: rgba(255, 255, 255, 0.82);
+  --tp-surface: rgba(0, 0, 0, 0.04);
+  --tp-surface-hover: rgba(0, 0, 0, 0.07);
+  --tp-border: rgba(0, 0, 0, 0.08);
+  --tp-border-hover: rgba(0, 0, 0, 0.14);
+  --tp-text: rgba(0, 0, 0, 0.88);
+  --tp-text-2: rgba(0, 0, 0, 0.5);
+  --tp-accent: #000;
+  --tp-glass: blur(32px) saturate(180%);
+  --tp-shadow:
+    0 0 0 0.5px rgba(0,0,0,0.06),
+    0 4px 12px rgba(0,0,0,0.08),
+    0 16px 48px rgba(0,0,0,0.1);
+  --tp-shadow-hover:
+    0 0 0 0.5px rgba(0,0,0,0.06),
+    0 8px 20px rgba(0,0,0,0.1),
+    0 24px 64px rgba(0,0,0,0.12);
+  --tp-glow: inset 0 1px 0 0 rgba(255,255,255,0.5);
+  --tp-connected: #059669;
+  --tp-error: #dc2626;
+  --tp-end-bg: rgba(239,68,68,0.08);
+  --tp-end-color: #ef4444;
+  --tp-end-border: rgba(239,68,68,0.12);
+  --tp-end-hover: rgba(239,68,68,0.14);
+  --tp-idle-opacity: 0.4;
+}
+
+/* ---- Dark theme ---- */
+.tp--dark {
+  --tp-bg: rgba(15, 15, 15, 0.85);
+  --tp-surface: rgba(255, 255, 255, 0.07);
+  --tp-surface-hover: rgba(255, 255, 255, 0.12);
+  --tp-border: rgba(255, 255, 255, 0.1);
+  --tp-border-hover: rgba(255, 255, 255, 0.18);
+  --tp-text: rgba(255, 255, 255, 0.95);
+  --tp-text-2: rgba(255, 255, 255, 0.55);
+  --tp-accent: #fff;
+  --tp-glass: blur(32px) saturate(180%);
+  --tp-shadow:
+    0 0 0 0.5px rgba(0,0,0,0.2),
+    0 4px 12px rgba(0,0,0,0.15),
+    0 16px 48px rgba(0,0,0,0.2);
+  --tp-shadow-hover:
+    0 0 0 0.5px rgba(0,0,0,0.2),
+    0 8px 20px rgba(0,0,0,0.18),
+    0 24px 64px rgba(0,0,0,0.22);
+  --tp-glow: inset 0 1px 0 0 rgba(255,255,255,0.06);
+  --tp-connected: #34d399;
+  --tp-error: #fb7185;
+  --tp-end-bg: rgba(251,113,133,0.12);
+  --tp-end-color: #fb7185;
+  --tp-end-border: rgba(251,113,133,0.15);
+  --tp-end-hover: rgba(251,113,133,0.2);
+  --tp-idle-opacity: 0.3;
+}
+
+/* ---- Reset ---- */
+.tp-widget, .tp-widget * { box-sizing: border-box; margin: 0; padding: 0; }
 .tp-widget {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.4;
 }
 
-.tp-status {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+/* ---- Bar (the one widget design) ---- */
+.tp-bar {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 10px 10px 18px;
+  width: 300px;
+  background: var(--tp-bg);
+  backdrop-filter: var(--tp-glass); -webkit-backdrop-filter: var(--tp-glass);
+  border: 1px solid var(--tp-border); border-radius: 99px;
+  box-shadow: var(--tp-shadow), var(--tp-glow);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.tp-bar:hover { border-color: var(--tp-border-hover); }
+
+/* ---- Text ---- */
+.tp-meta { flex: 1; min-width: 0; }
+.tp-name {
+  display: block; font-size: 14px; font-weight: 600; color: var(--tp-text);
+  letter-spacing: -0.01em;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.tp-sub {
+  display: block; font-size: 12px; color: var(--tp-text-2); margin-top: 1px;
 }
 
-.tp-status__name {
-  font-size: 14px;
-  font-weight: 500;
-  color: #18181b;
+/* ---- Start button ---- */
+.tp-start {
+  width: 42px; height: 42px; border-radius: 50%; flex-shrink: 0;
+  background: var(--tp-accent); color: #fff;
+  border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s ease;
+}
+.tp-start:hover { filter: brightness(1.15); transform: scale(1.05); }
+.tp-start:active { transform: scale(0.93); }
+
+/* ---- Status ---- */
+.tp-status       { display: flex; flex-direction: column; gap: 2px; }
+.tp-status__name { font-size: 14px; font-weight: 500; color: var(--tp-text); }
+.tp-status__text { font-size: 12px; color: var(--tp-text-2); display: flex; align-items: center; gap: 6px; font-weight: 500; }
+.tp-status--connected { color: var(--tp-accent); }
+.tp-status--error     { color: var(--tp-error); }
+.tp-status__dot  { width: 6px; height: 6px; border-radius: 50%; background: var(--tp-connected); animation: tp-pulse 2s ease-in-out infinite; }
+
+/* ---- Connecting dot ---- */
+.tp-dot {
+  width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+  background: var(--tp-accent); animation: tp-pulse 1.2s ease-in-out infinite;
 }
 
-.tp-status__text {
-  font-size: 12px;
-  color: #71717a;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.tp-status--connected {
-  color: #059669;
-}
-
-.tp-status--error {
-  color: #dc2626;
-}
-
-.tp-status__dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #059669;
-  animation: tp-pulse 2s ease-in-out infinite;
-}
-
-.tp-icon {
-  width: 20px;
-  height: 20px;
-}
-
-.tp-button-group {
-  display: inline-flex;
-  gap: 8px;
-}
-
+/* ---- Buttons (mute/end) ---- */
+.tp-icon { width: 20px; height: 20px; flex-shrink: 0; }
+.tp-button-group { display: inline-flex; gap: 6px; }
 .tp-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.15s, transform 0.1s;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 42px; height: 42px; border-radius: 12px;
+  border: 1px solid transparent; cursor: pointer;
+  transition: all 0.15s ease;
 }
+.tp-button:active { transform: scale(0.92); }
+.tp-button--start  { background: var(--tp-accent); color: #fff; border: none; }
+.tp-button--start:hover { filter: brightness(1.15); }
+.tp-button--start:disabled { opacity: 0.3; cursor: not-allowed; }
+.tp-button--mute   { background: var(--tp-surface); color: var(--tp-text); border-color: var(--tp-border); }
+.tp-button--mute:hover { background: var(--tp-surface-hover); border-color: var(--tp-border-hover); }
+.tp-button--end    { background: var(--tp-end-bg); color: var(--tp-end-color); border-color: var(--tp-end-border); }
+.tp-button--end:hover { background: var(--tp-end-hover); }
+.tp-button--loading { opacity: 0.5; }
+.tp-spin { animation: tp-spin 1s linear infinite; }
 
-.tp-button:active {
-  transform: scale(0.95);
+/* ---- Waveform ---- */
+.tp-wave {
+  display: flex; align-items: center; gap: 3px; height: 24px; flex-shrink: 0;
 }
+.tp-wave span {
+  display: block; width: 3px; height: 20px; border-radius: 3px;
+  background: var(--tp-accent);
+  transform-origin: center;
+  will-change: transform;
+}
+.tp-wave--idle span { animation: tp-breathe 3s ease-in-out infinite; }
+.tp-wave--idle span:nth-child(1) { animation-delay: 0s; }
+.tp-wave--idle span:nth-child(2) { animation-delay: 0.4s; }
+.tp-wave--idle span:nth-child(3) { animation-delay: 0.8s; }
+.tp-wave--idle span:nth-child(4) { animation-delay: 1.2s; }
+.tp-wave--idle span:nth-child(5) { animation-delay: 1.6s; }
 
-.tp-button--start {
-  background: #18181b;
-  color: white;
-}
-
-.tp-button--start:hover {
-  background: #27272a;
-}
-
-.tp-button--start:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.tp-button--mute {
-  background: #f4f4f5;
-  color: #18181b;
-}
-
-.tp-button--mute:hover {
-  background: #e4e4e7;
-}
-
-.tp-button--end {
-  background: #dc2626;
-  color: white;
-}
-
-.tp-button--end:hover {
-  background: #b91c1c;
-}
-
-.tp-button--loading {
-  opacity: 0.7;
-}
-
-.tp-spin {
-  animation: tp-spin 1s linear infinite;
-}
-
-@keyframes tp-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-@keyframes tp-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
-}
+/* ---- Animations ---- */
+@keyframes tp-spin    { to { transform: rotate(360deg); } }
+@keyframes tp-pulse   { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+@keyframes tp-breathe { 0%, 100% { transform: scaleY(0.2); } 50% { transform: scaleY(0.6); } }
