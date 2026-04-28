@@ -37,7 +37,7 @@ export function WidgetStatus({ state, agentName, errorMessage }: WidgetStatusPro
     <div className="tp-status">
       {agentName && <div className="tp-status__name">{agentName}</div>}
       <div className={`tp-status__text tp-status--${state}`}>
-        {state === 'connected' && <span className="tp-status__dot" />}
+
         {errorMessage && state === 'error' ? errorMessage : statusText[state]}
       </div>
     </div>
