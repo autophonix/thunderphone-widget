@@ -4,7 +4,7 @@ import { AudioHandler } from './AudioHandler'
 import { createWidgetSession, WidgetAPIError } from './api'
 import type { WidgetState, WidgetSessionResponse } from './types'
 
-const DEFAULT_RINGTONE_URL = 'https://storage.googleapis.com/thunderphone-widget-cdn/widget/assets/ringtone-default.mp3'
+const DEFAULT_RINGTONE_URL = 'https://stthunderphoneprod.z13.web.core.windows.net/widget/assets/ringtone-default.mp3'
 
 export interface UseThunderPhoneOptions {
   publishableKey: string
