@@ -9,6 +9,12 @@ const DEFAULT_RINGTONE_URL = 'https://cdn.thunderphone.com/widget/assets/rington
 export interface UseThunderPhoneOptions {
   publishableKey: string
   apiBase?: string
+  /** Optional per-session language code or locale, e.g. "en", "es", or "fr-FR". */
+  language?: string
+  /** Optional per-session voice name, e.g. "maria". */
+  voice?: string
+  /** Optional per-session factual website/page context. */
+  context?: string
   onConnect?: () => void
   onDisconnect?: () => void
   onError?: (error: { error: string; message: string }) => void
@@ -159,7 +165,11 @@ export function useThunderPhone(opts: UseThunderPhoneOptions): UseThunderPhoneRe
     )
 
     try {
-      const sess = await createWidgetSession(opts.publishableKey, opts.apiBase)
+      const sess = await createWidgetSession(opts.publishableKey, opts.apiBase, {
+        language: opts.language,
+        voice: opts.voice,
+        context: opts.context,
+      })
       setSession(sess)
     } catch (err) {
       setState('error')
@@ -171,7 +181,7 @@ export function useThunderPhone(opts: UseThunderPhoneOptions): UseThunderPhoneRe
         opts.onError?.({ error: 'unknown', message: 'Unable to connect.' })
       }
     }
-  }, [opts.publishableKey, opts.apiBase, state, opts.onError])
+  }, [opts.publishableKey, opts.apiBase, opts.language, opts.voice, opts.context, state, opts.onError])
 
   const disconnect = useCallback(() => {
     handleDisconnect()

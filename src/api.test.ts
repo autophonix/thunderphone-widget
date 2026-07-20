@@ -35,6 +35,44 @@ describe('createWidgetSession', () => {
     expect(mockFetch).toHaveBeenCalledWith('https://custom.api/v1/widget/session', expect.anything())
   })
 
+  it('sends language override when provided', async () => {
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ call_id: 1, token: 'tok', room_name: 'room', server_url: 'wss://lk', agent_name: 'Agent' }),
+    })
+
+    await createWidgetSession('pk_live_abc', undefined, { language: 'es-ES' })
+
+    expect(mockFetch).toHaveBeenCalledWith('https://api.thunderphone.com/v1/widget/session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-API-Key': 'pk_live_abc' },
+      body: JSON.stringify({ language: 'es-ES' }),
+    })
+  })
+
+  it('sends voice and context overrides when provided', async () => {
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ call_id: 1, token: 'tok', room_name: 'room', server_url: 'wss://lk', agent_name: 'Agent' }),
+    })
+
+    await createWidgetSession('pk_live_abc', undefined, {
+      language: 'fr-FR',
+      voice: 'maria',
+      context: 'ThunderPhone site context',
+    })
+
+    expect(mockFetch).toHaveBeenCalledWith('https://api.thunderphone.com/v1/widget/session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-API-Key': 'pk_live_abc' },
+      body: JSON.stringify({
+        language: 'fr-FR',
+        voice: 'maria',
+        context: 'ThunderPhone site context',
+      }),
+    })
+  })
+
   it('returns session response on success', async () => {
     const session = { call_id: 99, token: 'mytoken', room_name: 'room-99', server_url: 'wss://lk', agent_name: 'TestAgent' }
     mockFetch.mockResolvedValue({ ok: true, json: () => Promise.resolve(session) })

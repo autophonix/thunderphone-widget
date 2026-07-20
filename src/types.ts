@@ -20,6 +20,14 @@ export type WidgetTheme = 'light' | 'dark'
 export interface ThunderPhoneWidgetProps {
   publishableKey: string
   apiBase?: string
+  /**
+   * Optional per-session language code or locale, e.g. "en", "es", or "fr-FR".
+   */
+  language?: string
+  /** Optional per-session voice name, e.g. "maria". */
+  voice?: string
+  /** Optional per-session factual website/page context. */
+  context?: string
   onConnect?: () => void
   onDisconnect?: () => void
   onError?: (error: WidgetError) => void
