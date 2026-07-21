@@ -24,7 +24,7 @@ function posStyle(p: WidgetPosition): React.CSSProperties {
 }
 
 export function ThunderPhoneWidget({
-  publishableKey, apiBase, onConnect, onDisconnect, onError,
+  publishableKey, apiBase, language, voice, context, onConnect, onDisconnect, onError,
   className, ringtone,
   position = 'bottom-right',
   primaryColor,
@@ -44,7 +44,7 @@ export function ThunderPhoneWidget({
     return (r * 299 + g * 587 + b * 114) / 1000 > 150
   })()
   const startIconColor = isLightAccent ? '#000' : '#fff'
-  const phone = useThunderPhone({ publishableKey, apiBase, onConnect, onDisconnect, onError, ringtone })
+  const phone = useThunderPhone({ publishableKey, apiBase, language, voice, context, onConnect, onDisconnect, onError, ringtone })
   const levelRef = phone.audioLevelRef
 
   const act = () => {
