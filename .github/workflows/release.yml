@@ -24,7 +24,9 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          # npm@latest (12.x) requires Node >=22; Node 20 is also deprecated
+          # on GitHub runners. Keep this at an npm-supported LTS.
+          node-version: "22"
           registry-url: "https://registry.npmjs.org"
 
       - name: Upgrade npm
