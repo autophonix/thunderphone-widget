@@ -76,6 +76,36 @@ export function useThunderPhone(opts: UseThunderPhoneOptions): UseThunderPhoneRe
   const audioLevelRef = useRef(0)
   const setAudioLevel = useCallback((v: number) => { audioLevelRef.current = v }, [])
 
+  // --- Warm-mic management ---
+  // The stream acquired at connect() is held (not stopped) until the call
+  // leaves 'connecting'. Releasing it immediately would let the OS drop the
+  // audio device out of communications mode, and LiveKit's own capture at
+  // room connect would re-engage it — an audible output dropout mid-call-
+  // setup (a long one on Bluetooth headsets, which switch profiles). Holding
+  // the stream keeps the device mode engaged so LiveKit's capture is silent.
+  const warmMicRef = useRef<MediaStream | null>(null)
+  const stateRef = useRef<WidgetState>('idle')
+
+  useEffect(() => {
+    stateRef.current = state
+  }, [state])
+
+  const releaseWarmMic = useCallback(() => {
+    const stream = warmMicRef.current
+    if (!stream) return
+    warmMicRef.current = null
+    stream.getTracks().forEach((t) => t.stop())
+  }, [])
+
+  // Release once connected (LiveKit has its own capture by then), on
+  // error/disconnect (never hold the mic outside a connection attempt),
+  // and on unmount.
+  useEffect(() => {
+    if (state !== 'connecting') releaseWarmMic()
+  }, [state, releaseWarmMic])
+
+  useEffect(() => releaseWarmMic, [releaseWarmMic])
+
   // --- Ringtone management ---
   const ringtoneUrl = resolveRingtoneUrl(opts.ringtone)
   const ringtoneRef = useRef<HTMLAudioElement | null>(null)
@@ -155,12 +185,19 @@ export function useThunderPhone(opts: UseThunderPhoneOptions): UseThunderPhoneRe
     }
 
     // Warm up mic permission in the background so the browser prompt (if
-    // needed) overlaps with the API call.  This is fire-and-forget: if the
-    // session request fails we simply discard the stream without the user
-    // noticing an unnecessary permission prompt — getUserMedia only shows
-    // the prompt once per origin, so subsequent calls are instant.
+    // needed) overlaps with the API call, and HOLD the stream until the call
+    // leaves 'connecting' (see warm-mic management above) so the audio
+    // device is already in communications mode when LiveKit captures.
     navigator.mediaDevices.getUserMedia({ audio: true }).then(
-      (stream) => { stream.getTracks().forEach((t) => t.stop()) },
+      (stream) => {
+        // The attempt may already be over (fast error path, user hung up).
+        if (stateRef.current !== 'connecting') {
+          stream.getTracks().forEach((t) => t.stop())
+          return
+        }
+        releaseWarmMic()
+        warmMicRef.current = stream
+      },
       () => {},
     )
 
@@ -181,7 +218,7 @@ export function useThunderPhone(opts: UseThunderPhoneOptions): UseThunderPhoneRe
         opts.onError?.({ error: 'unknown', message: 'Unable to connect.' })
       }
     }
-  }, [opts.publishableKey, opts.apiBase, opts.language, opts.voice, opts.context, state, opts.onError])
+  }, [opts.publishableKey, opts.apiBase, opts.language, opts.voice, opts.context, state, opts.onError, releaseWarmMic])
 
   const disconnect = useCallback(() => {
     handleDisconnect()
