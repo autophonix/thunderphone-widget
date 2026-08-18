@@ -13,6 +13,8 @@ export interface CreateWidgetSessionOptions {
   language?: string
   voice?: string
   context?: string
+  analyticsDistinctId?: string
+  analyticsReplayUrl?: string
 }
 
 export async function createWidgetSession(
@@ -25,6 +27,8 @@ export async function createWidgetSession(
   if (options.language) body.language = options.language
   if (options.voice) body.voice = options.voice
   if (options.context) body.context = options.context
+  if (options.analyticsDistinctId) body.analytics_distinct_id = options.analyticsDistinctId
+  if (options.analyticsReplayUrl) body.analytics_replay_url = options.analyticsReplayUrl
   const response = await fetch(`${base}/widget/session`, {
     method: 'POST',
     headers: {

@@ -73,6 +73,27 @@ describe('createWidgetSession', () => {
     })
   })
 
+  it('forwards analytics identifiers when provided', async () => {
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ call_id: 1, token: 'tok', room_name: 'room', server_url: 'wss://lk', agent_name: 'Agent' }),
+    })
+
+    await createWidgetSession('pk_live_abc', undefined, {
+      analyticsDistinctId: 'ph-abc123',
+      analyticsReplayUrl: 'https://replay.example/1/session/42',
+    })
+
+    expect(mockFetch).toHaveBeenCalledWith('https://api.thunderphone.com/v1/widget/session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-API-Key': 'pk_live_abc' },
+      body: JSON.stringify({
+        analytics_distinct_id: 'ph-abc123',
+        analytics_replay_url: 'https://replay.example/1/session/42',
+      }),
+    })
+  })
+
   it('returns session response on success', async () => {
     const session = { call_id: 99, token: 'mytoken', room_name: 'room-99', server_url: 'wss://lk', agent_name: 'TestAgent' }
     mockFetch.mockResolvedValue({ ok: true, json: () => Promise.resolve(session) })
