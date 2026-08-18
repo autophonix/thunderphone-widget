@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState, type ReactNode, createElement
 import { LiveKitRoom } from '@livekit/components-react'
 import { AudioHandler } from './AudioHandler'
 import { createWidgetSession, WidgetAPIError } from './api'
-import type { WidgetState, WidgetSessionResponse } from './types'
+import type { WidgetAnalyticsContext, WidgetState, WidgetSessionResponse } from './types'
 
 const DEFAULT_RINGTONE_URL = 'https://cdn.thunderphone.com/widget/assets/ringtone-default.mp3'
 
@@ -15,6 +15,13 @@ export interface UseThunderPhoneOptions {
   voice?: string
   /** Optional per-session factual website/page context. */
   context?: string
+  /**
+   * Called when a call starts; return the visitor's current analytics
+   * identifiers so the platform can join the call to the visitor's
+   * analytics session. A function (not static values) because replay URLs
+   * and distinct ids typically arrive after mount.
+   */
+  analytics?: () => WidgetAnalyticsContext | undefined
   onConnect?: () => void
   onDisconnect?: () => void
   onError?: (error: { error: string; message: string }) => void
@@ -202,10 +209,13 @@ export function useThunderPhone(opts: UseThunderPhoneOptions): UseThunderPhoneRe
     )
 
     try {
+      const analyticsContext = opts.analytics?.()
       const sess = await createWidgetSession(opts.publishableKey, opts.apiBase, {
         language: opts.language,
         voice: opts.voice,
         context: opts.context,
+        analyticsDistinctId: analyticsContext?.distinctId,
+        analyticsReplayUrl: analyticsContext?.replaySessionUrl,
       })
       setSession(sess)
     } catch (err) {
@@ -218,7 +228,7 @@ export function useThunderPhone(opts: UseThunderPhoneOptions): UseThunderPhoneRe
         opts.onError?.({ error: 'unknown', message: 'Unable to connect.' })
       }
     }
-  }, [opts.publishableKey, opts.apiBase, opts.language, opts.voice, opts.context, state, opts.onError, releaseWarmMic])
+  }, [opts.publishableKey, opts.apiBase, opts.language, opts.voice, opts.context, opts.analytics, state, opts.onError, releaseWarmMic])
 
   const disconnect = useCallback(() => {
     handleDisconnect()

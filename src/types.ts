@@ -17,6 +17,13 @@ export type WidgetPosition = 'bottom-right' | 'bottom-left' | 'top-right' | 'top
 
 export type WidgetTheme = 'light' | 'dark'
 
+export interface WidgetAnalyticsContext {
+  /** Host page's analytics distinct id (e.g. PostHog), read at call time. */
+  distinctId?: string
+  /** Session-replay deep-link for the visitor's current recording. */
+  replaySessionUrl?: string
+}
+
 export interface ThunderPhoneWidgetProps {
   publishableKey: string
   apiBase?: string
@@ -28,6 +35,13 @@ export interface ThunderPhoneWidgetProps {
   voice?: string
   /** Optional per-session factual website/page context. */
   context?: string
+  /**
+   * Called when a call starts; return the visitor's current analytics
+   * identifiers so the platform can join the call to the visitor's
+   * analytics session. A function (not static values) because replay URLs
+   * and distinct ids typically arrive after mount.
+   */
+  analytics?: () => WidgetAnalyticsContext | undefined
   onConnect?: () => void
   onDisconnect?: () => void
   onError?: (error: WidgetError) => void
