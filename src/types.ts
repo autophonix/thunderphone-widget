@@ -59,7 +59,7 @@ export interface ThunderPhoneWidgetProps {
   position?: WidgetPosition
   /**
    * Primary accent color for the widget. Any valid CSS color.
-   * Defaults to `'#6366f1'` (indigo).
+   * Defaults to `'#000000'` in the light theme and `'#ffffff'` in dark.
    */
   primaryColor?: string
   /**

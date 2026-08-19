@@ -42,7 +42,10 @@ export interface UseThunderPhoneReturn {
   isMuted: boolean
   error: string | undefined
   agentName: string | undefined
-  /** 0–1 audio level (static snapshot, for convenience). */
+  /**
+   * @deprecated Always `0` — never updates. Read `audioLevelRef` instead
+   * (mutable ref, sample it from a rAF loop or interval).
+   */
   audioLevel: number
   /** Mutable ref with real-time 0–1 audio level. Read from rAF loops for smooth animation. */
   audioLevelRef: React.RefObject<number>
