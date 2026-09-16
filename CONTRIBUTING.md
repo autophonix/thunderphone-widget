@@ -1,4 +1,4 @@
-# Contributing to thunderphone-widget
+# Contributing to widget
 
 We welcome contributions from the community! Whether it's a bug fix, new feature, or improvement to documentation, your help is appreciated.
 
@@ -7,8 +7,8 @@ We welcome contributions from the community! Whether it's a bug fix, new feature
 1. **Fork the repository** on GitHub.
 2. **Clone your fork** locally:
    ```bash
-   git clone https://github.com/<your-username>/thunderphone-widget.git
-   cd thunderphone-widget
+   git clone https://github.com/<your-username>/widget.git
+   cd widget
    ```
 3. **Install dependencies**:
    ```bash
@@ -33,7 +33,7 @@ We welcome contributions from the community! Whether it's a bug fix, new feature
 1. Push your branch to your fork and open a pull request against the `main` branch of this repository.
 2. Write a clear PR description that explains **what** the change does and **why** it is needed.
 3. All PRs must pass CI checks (build and type check) before they can be merged.
-4. All PRs require approval from at least one [autophonix](https://github.com/autophonix) organization member before merging.
+4. All PRs require approval from at least one [thunderphone](https://github.com/thunderphone) organization member before merging.
 
 ## Code of Conduct
 
